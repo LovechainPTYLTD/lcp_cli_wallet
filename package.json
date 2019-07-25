@@ -1,5 +1,5 @@
 {
-  "name": "lcp_full_node",
+  "name": "lcp_cli_wallet",
   "description": "LCP command line wallet",
   "author": "LCP",
   "version": "0.0.1",
@@ -14,11 +14,11 @@
   ],
   "license": "MIT",
   "repository": {
-    "url": "git://github.com/byteball/headless-obyte.git",
+    "url": "git://github.com/LovechainPTYLTD/lcp_cli_wallet.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/byteball/headless-obyte/issues"
+    "url": "https://github.com/LovechainPTYLTD/lcp_cli_wallet/issues"
   },
   "browser": {
     "request": "browser-request",
@@ -30,9 +30,10 @@
     "json-rpc2": "^1.0.2",
     "node-gyp": "^5.0.2",
     "lcp_lib": "git+https://github.com/LovechainPTYLTD/lcp_lib.git",
-    "yargs": "^13.2.2"
+    "yargs": "^13.2.2",
+    "lodash": ">=4.17.11"
   },
-  "homepage": "https://github.com/LovechainPTYLTD/fullNode#readme",
+  "homepage": "https://github.com/LovechainPTYLTD/lcp_cli_wallet#readme",
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -10,7 +10,7 @@ exports.bLight = false;
 exports.storage = 'sqlite';
 
 exports.WS_PROTOCOL = "ws://";
-exports.hub = process.env.testnet ? '18.216.5.4' : '18.216.5.4';
+exports.hub = process.env.testnet ? 'hub00.lovecoinplus.com' : 'hub00.lovecoinplus.com';
 exports.deviceName = 'Headless';
 exports.permanent_pairing_secret = 'randomstring';
 exports.control_addresses = ['DEVICE ALLOWED TO CHAT'];
