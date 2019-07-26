@@ -1,87 +1,147 @@
-# Headless wallet for Byteball network
+# command line wallet for LCP
+## can be used as a full node or a light client
+# LCP网络的命令行钱包。 
+## 可以部署为完整节点或轻客户端。
+## Server Initial Cloud Setup
+## 服务器初始云设置
 
-This is a headless alternative of the [GUI wallet](../../../byteball) for Byteball network.  It is designed for an always-online deployment on a server.
+The ideal server operating system would be `Ubuntu Server 16.04 LTS` with at least
+4 Gigabytes of RAM.
 
-## Install
+理想的服务器操作系统至少是 `Ubuntu Server 16.04 LTS`
+4 GB的RAM。
 
-Install node.js, clone the repository, then say
-```sh
-npm install
+Your security group should be setup to receive inbound traffic from `SSH` and `HTTP` at a port of your choosing. The default ports should be fine. The security group will allow traffic from the HTTP port to reach your reverse proxy (`nginx`) that will be installed later on the server.  This reverse proxy will forward the data to your operational NodeJS server.
+
+您的安全组应设置为在您选择的端口从 `SSH` 和 `HTTP` 接收入站流量。 默认端口应该没问题。 安全组将允许来自HTTP端口的流量到达您稍后将在服务器上安装的反向代理（`nginx`）。 此反向代理将数据转发到您的运行NodeJS服务器。
 ```
-If you want to accept incoming connections, you'll need to set up a proxy, such as nginx, to forward all websocket connections on a specific path to your daemon running this code.  See example configuration for nginx in [ocore](../../../ocore) documentation.
-
-## Testnet
-
-Run `cp .env.testnet .env` to connect to TESTNET hub. Backup and delete the database if you already ran it on MAINNET. Wallet app for [TESTNET can be downloaded from Obyte.org](https://obyte.org/testnet.html) website.
-
-## Run
-```sh
-node start.js
+.............
+. world世界  .
+.............
+      |
+      |
+  `BLOCKED屏蔽`
+      |
+      |
+.............           .................
+.  node节点  . <- - - >  .  your servers你的服务器 .
+.............           .................
 ```
-The first time you run it, it will generate a new extended private key (BIP44) and ask you for a passphrase to encrypt it.  The BIP39 mnemonic will be saved to the file keys.json in the app data directory (see [ocore](../../../ocore) for its location), the passphrase is, of course, never saved.  Every time you start the wallet, you'll have to type the passphrase.  One implication of this is the wallet cannot be started automatically when your server restarts, you'll have to ssh the server and type the passphrase.
-
-After you enter the passphrase, the wallet redirects all output to a log file in your app data directory but it still holds the terminal window.  To release it, type Ctrl-Z, then bg to resume the wallet in the background.  After that, you can safely terminate the ssh session.
-
-## Backup
-
-If you run only a headless wallet, backing up `keys.json` (or just the mnemonic from this file) in your data folder is enough, the rest can be restored by syncing the node again (which takes several days) and running the below script.  If your headless wallet is included in a bigger application which stores its own data in addition to the public DAG data, you need to back up your entire data folder.
-
-## Recovery from seed (mnemonic)
-```sh
-cd tools
-node recovery.js --limit=20
-```
-The script generates your wallet addresses and stops when it finds `limit` (default 20) unused addresses in a row.  If using full wallet, your node should be synced before running the script.
-
-If you already have `keys.json` file, copy it to the data folder, otherwise the script will ask you about your mnemonic.
-
-## Customize
-
-If you want to change any defaults, refer to the documentation of [ocore](../../../ocore), the core Byteball library `require()`'d from here.  Below are some headless wallet specific settings you might want to change:
-
-* `bLight`: some bots don't need to sync full node. If your bot is designed to work as light node or you just wish to get it working first, change `bLight` variable to `true` in configuration file. Changing this value will make it use different SQLite database next time you run it.
-* `bSingleAddress`: Should the wallet use single address or could generate new addresses?
-* `bStaticChangeAddress`: Should the wallet issue new change addresses or always use the same static one?
-* `control_addresses`: array of device addresses of your other (likely GUI) wallets that can chat with the wallet and give commands.  To learn the device address of your GUI wallet, click menu button, then Global preferences, and look for 'Device address'.  If your `control_addresses` is empty array or contains a single address that is invalid (this is the default), then nobody can remotely control your wallet.
-* `payout_address`: if you give `pay` command over chat interface, the money will be sent to this Byteball address.
-* `hub`: hub address without wss://, the default is `byteball.org/bb`.
-* `deviceName`: the name of your device as seen in the chat interface.
-* `permanent_pairing_secret`: the pairing secret used to authenticate pairing requests when you pair your GUI wallet for remote control.  The pairing secret is the part of the pairing code after #.
 
 
-## Remote control
+Since this server should not have any communications with the outside world it would be advised to setup your security group to only allow connections from particular IP addresses.
 
-You can remotely control your wallet via chat interface from devices listed in `control_addresses`.  When the wallet starts, it prints out its pairing code.  Copy it, open your GUI wallet, menu button, paired devices, add a new device, accept invitation, paste the code.  Now your GUI wallet is paired to your headless wallet and you can find it in the list of correspondents (menu, paired devices) to start a chat.  There are four commands you can give:
+由于此服务器不应与外界进行任何通信，因此建议将安全组设置为仅允许来自特定IP地址的连接。
 
-* `balance`: to request the current balance on the headless wallet;
-* `address`: to get to know one of the wallet's addresses, you use it to refill the wallet's balance;
-* `pay <amount in bytes>` to request withdrawal from the headless wallet to your `payout_address`, or `pay <amount> <asset>` to withdraw another asset.
-* `mci`: to get the last stable MCI on the headless wallet;
-* `space`: to get the file sizes of data folder;
+## Server Software Installation
+## 服务器软件安装
+### Preliminary Preparations
+### 初步准备
 
-![Chat with headless wallet](chat-with-headless.png)
+`sudo apt-get update`
+`sudo apt-get upgrade`
+`sudo apt-get install python build-essential -y`
 
-## Differences from GUI wallet
+### NodeJS Version management (NVM)
+### NodeJS版本管理（NVM）
+run this command first:
+首先运行此命令：:
 
-* Headless wallet (as software) can have only one wallet (as storage of funds) AKA account, its BIP44 derivation path is `m/44'/0'/0'`.  In GUI wallet (as software) you can create multiple wallets (as storage of funds).
-* Headless wallet cannot be a member of multisig address because there is nobody to present confirmation messages to.  Hence, you can't have multisig security on headless wallets and have to have other security measures in place.
+`curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash`
 
-## Security recommendations
+after installation is complete send these three commands:
+安装完成后发送以下三个命令：
+`export NVM_DIR="$HOME/.nvm"`
+`[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"`
+`[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"`
 
-First, don't run the server wallet if you don't absolutely need to.  For example, if you want to only accept payments, you don't need it.  Consider server wallet only if you need to *send* payments in programmatic manner.
+verify your `nvm` installation with this command:
+使用以下命令验证您的` nvm `安装：
 
-Having the keys encrypted by a passphrase helps protect against the most trivial theft of private keys in case an attacker gets access to your server.  Set a good passphrase that cannot be easily bruteforced and never store it on the server.  
+`nvm -v`
 
-However, that is not enough.  If an attacker gets access to your server, he could also modify your conf.json and change `control_addresses` and `payout_address`, then wait that you restart the wallet and steal its entire balance.  To help you prevent such attacks, every time the wallet starts it prints out the current values of `control_addresses` and `payout_address`, please pay attention to these values before entering your passphrase.
+if everything is okay then we use `nvm` to install `NodeJS`
+如果一切正常，那么我们使用` nvm `来安装` NodeJS `
 
-Use TOR ([conf.socksHost, conf.socksPort, and conf.socksLocalDNS](../../../ocore#confsockshost-confsocksport-and-confsockslocaldns)) to hide your server IP address from potential attackers.
+### NodeJS Installation NodeJS 安装
+<span style="color:red">_do not install the latest version of node_</span>
+<span style="color:red">_不要安装最新版本的NodeJS_</span>
+use `nvm` to install NodeJS version `8.9.4`:
+使用 `nvm` 安装 `NodeJS` 版本 `8.9.4`：
 
-Don't keep more money than necessary on the server wallet, withdraw the excess using `pay` command in the chat interface.
+`nvm install 8.9.4`
 
-## Custom commands
+after `NodeJS version 8.9.4` has been successfully installed run this:
+在 `NodeJS配件8.9.4` 成功安装后运行：
 
-Payments are the central but not the only type of data that Byteball stores.  In [tools/](tools/) subdirectory, you will find many small scripts that demonstrate how to create other message types that are not available through the GUI wallet.  In particular, you can declare and issue your own assets, post data as an oracle, create polls and cast votes.  Just edit any of these scripts and run it.
+`npm install node-gyp -g`
 
-## RPC service
+### Wallet installation
+### 钱包安装
+`git clone http://github.com/byteball/headless-byteball`
+`cd headless-byteball`
+`npm install`
 
-By default, no RPC service is enabled.  If you want to manage your headless wallet via JSON-RPC API, e.g. you run an exchange, run [tools/rpc_service.js](tools/rpc_service.js) instead.  See the [documentation about running RPC service](https://developer.obyte.org/json-rpc/running-rpc-service).
+### <span style="color:blue">Necessary Files</span>
+### <span style="color:blue">必要的文件</span>
+For <span style="color:red">TEST NET 测试网络</span>: copy  (复制) `testnetConstants.js` as(如同) `constants.js` in（在） `node_modules/ocore/`
+For <span style="color:red">TEST NET 测试网络</span>: copy (复制) `headless_conf.js` as (如同) `conf.js` in （在） `headless-byteball`
+For <span style="color:green">MAIN NET 主要网络</span>: copy (复制) `mainNetconstants.js` as (如同) `constants.js` in（在） `node_modules/ocore/`
+For <span style="color:red">MAIN NET 主要网络</span>: copy (复制) `headless_conf.js` as (如同) `conf.js` in （在） `headless-byteball`
+
+## Getting private key
+the private key is made automatically by the server on first start.
+私钥是由服务器在第一次启动时自动生成的。
+to start the server run this command:
+启动服务器运行此命令：
+`node start.js`
+
+on first run, the program will ask for a password. type a password here and remember it. it is not saved.
+在第一次运行时，程序将要求输入密码。 在这里输入密码并记住它。 它没有保存。
+
+to run in the background press `ctrl - Z` then type `bg`
+在后台运行按 `ctrl-Z` 然后输入 `bg`
+then type `jobs` find the job running on your server. should be just one.
+然后输入 `jobs` 找到在您的服务器上运行的任务。 应该只是一个。
+
+to daemonize process:
+维护进程：
+`disown %1` <--- `%1` is the default but for your system it may be a different number. you will know for sure when you run the `jobs` command. 这是默认值，但对于您的系统，它可能是不同的值。 当你运行 `jobs` 命令时，你肯定会知道。
+
+to kill a server type:
+停止服务器:
+`ps -aux | grep node`
+
+find the process ID then type:
+找到进程ID然后键入:
+`kill -9 PSID` where PSID is the process ID which you would get from `ps -aux | grep node` PSID是您从` ps -aux |获得的进程ID grep节点`
+
+### Starting the server
+### 开始节点
+type:
+输入：
+`node start.js`
+
+### Starting RPC service
+### 开始RPC服务：
+`do not` type :
+`别`输入：
+`node start.js`
+
+instead type:
+输入：
+`node tools/rpc_service.js`
+
+then enter your password
+然后输入你的密码
+
+### Stopping the server
+### 停住服务器
+
+to kill a server type:
+停止服务器:
+`ps -aux | grep node`
+
+find the process ID then type:
+找到进程ID然后键入:
+`kill -9 PSID` where PSID is the process ID which you would get from `ps -aux | grep node` PSID是您从` ps -aux |获得的进程ID grep节点`
