@@ -78,16 +78,9 @@ after `NodeJS version 8.9.4` has been successfully installed run this:
 
 ### Wallet installation
 ### 钱包安装
-`git clone http://github.com/byteball/headless-byteball`
-`cd headless-byteball`
+`git clone https://github.com/LovechainPTYLTD/lcp_cli_wallet.git`
+`cd lcp_cli_wallet`
 `npm install`
-
-### <span style="color:blue">Necessary Files</span>
-### <span style="color:blue">必要的文件</span>
-For <span style="color:red">TEST NET 测试网络</span>: copy  (复制) `testnetConstants.js` as(如同) `constants.js` in（在） `node_modules/ocore/`
-For <span style="color:red">TEST NET 测试网络</span>: copy (复制) `headless_conf.js` as (如同) `conf.js` in （在） `headless-byteball`
-For <span style="color:green">MAIN NET 主要网络</span>: copy (复制) `mainNetconstants.js` as (如同) `constants.js` in（在） `node_modules/ocore/`
-For <span style="color:red">MAIN NET 主要网络</span>: copy (复制) `headless_conf.js` as (如同) `conf.js` in （在） `headless-byteball`
 
 ## Getting private key
 the private key is made automatically by the server on first start.
