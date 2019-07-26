@@ -79,7 +79,11 @@ after `NodeJS version 8.9.4` has been successfully installed run this:
 ### Wallet installation
 ### 钱包安装
 `git clone https://github.com/LovechainPTYLTD/lcp_cli_wallet.git`
+
+
 `cd lcp_cli_wallet`
+
+
 `npm install`
 
 ## Getting private key
