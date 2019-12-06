@@ -47,7 +47,7 @@ Since this server should not have any communications with the outside world it w
 run this command first:
 首先运行此命令：:
 
-`curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash`
+`curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash`
 
 after installation is complete send these three commands:
 安装完成后发送以下三个命令：
@@ -69,10 +69,10 @@ if everything is okay then we use `nvm` to install `NodeJS`
 use `nvm` to install NodeJS version `8.9.4`:
 使用 `nvm` 安装 `NodeJS` 版本 `8.9.4`：
 
-`nvm install 8.9.4`
+`nvm install 8.15.0`
 
-after `NodeJS version 8.9.4` has been successfully installed run this:
-在 `NodeJS配件8.9.4` 成功安装后运行：
+after `NodeJS version 8.15.` has been successfully installed run this:
+在 `NodeJS配件8.15.0` 成功安装后运行：
 
 `npm install node-gyp -g`
 
